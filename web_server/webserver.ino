@@ -1,14 +1,17 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
+#include "oled_u8g2.h" // oled display
 
 const char* ssid = "SmartFactory";
 const char* password = "inha4885";
 
+OLED_U8G2 oled; // create oled object
 WebServer server(80);  // create WebServer object, port
 
 void setup(void) {
   Serial.begin(115200);  // ESP32 baud rate
+  oled.setup();
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
@@ -30,6 +33,10 @@ void setup(void) {
 }
 
 void loop(void) {
+  oled.setLine(1, "Inha Factory");
+  oled.setLine(2, "Web Server");
+  oled.display();
+
   server.handleClient();  // clients process
   delay(5); // 5/1000 sec
 }
