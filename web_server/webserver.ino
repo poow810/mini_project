@@ -50,7 +50,9 @@ void loop(void) {
 }
 
 void handleRootEvent() {
-  Serial.println("main page");
+  Serial.print("main page from ");
+
+  String clientIP = server.client().remoteIP().toString();  // client's ip addr.
 
   Vo = analogRead(tempSensor); // read from temperature sensing value
   R2 = R1 * (4095.0 / (float)Vo - 1.0);
@@ -60,7 +62,13 @@ void handleRootEvent() {
   Tf = (Tc * 9.0/5.0) + 32.0;  // fahrenheit
 
   String message = "Welcome Inha SmartFactory WebServer!\n\n";
-  message = message + "Temperature: " + String(Tc) + "C " + "(" + String(Tf) + "F)";
+  message += "Your IP address: " + clientIP;
+  message = message + "\nTemperature: " + String(Tc) + "C " + "(" + String(Tf) + "F)";
   server.send(200, "text/plain", message);  // status code 200(OK), format, message
-  Serial.println(message); // monitoring
+
+  Serial.println(clientIP);
+  Serial.print(Tc);
+  Serial.print("C (");
+  Serial.print(Tf);
+  Serial.println("F)");
 }
