@@ -73,7 +73,7 @@ public class SmartFactoryClient {
             connection.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Exception occured." + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Exception occurred." + e.getMessage());
         }
     }
 
