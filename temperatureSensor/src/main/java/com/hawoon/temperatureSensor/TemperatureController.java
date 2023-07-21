@@ -1,30 +1,37 @@
 package com.hawoon.temperatureSensor;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 
-@RequiredArgsConstructor
 @RestController
 public class TemperatureController {
 
     private final TemperatureService temperatureService;
 
-    @PostMapping("/api/temperatures")
-    public ResponseEntity<TemperatureEntity> addTemperature(@RequestBody TemperatureDto dto) {
-        TemperatureEntity savedTemperature = temperatureService.save(dto);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(savedTemperature);
+    @Autowired
+    public TemperatureController(TemperatureService temperatureService) {
+        this.temperatureService = temperatureService;
     }
 
+    @GetMapping("/test")
+    public String displayTemperature(Model model) {
+        TemperatureDto temperatureDto = temperatureService.fetchTemperatureFromArduino();
+        if (temperatureDto != null) {
+            double celsius = temperatureDto.getCelsius();
+            double fahrenheit = temperatureDto.getFahrenheit();
+            String arduinoIP = "http://165.246.116.118/";
 
+            model.addAttribute("celsius", celsius);
+            model.addAttribute("fahrenheit", fahrenheit);
+            model.addAttribute("arduinoIP", arduinoIP);
 
+            temperatureService.saveTemperature(temperatureDto);
+        }
+        return "templates/test/temperature.html";
+    }
 }
+
+
+
