@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TemperatureService {
 
-    private static final String ARDUINO_URL = "http://165.246.116.81:80/"; // 통신을 위한 URL
+    private static final String ARDUINO_URL = "http://192.168.0.3:80/"; // 통신을 위한 URL
     private final RestTemplate restTemplate;
     private final TemperatureRepository temperatureRepository;
 
@@ -21,11 +23,20 @@ public class TemperatureService {
         this.temperatureRepository = temperatureRepository;
     }
 
+    // 전달된 온도 값을 Repository에 저장
     public void saveTemperature(TemperatureDto temperatureDto) {
         if (temperatureDto != null) {
             temperatureRepository.save(temperatureDto.toEntity());
         }
     }
+
+    // 온도 목록 조회
+    public List<TemperatureDto> getTemperature() { // Repository에서 가져온 데이터(엔티티 -> DTO)로 변환하며 캡슐화
+        return temperatureRepository.findAll().stream() // 서비스 계층에서는 직접적인 엔티티로 반환하는 것보다 DTO를 이용해 캡슐화
+                .map(this::convertToDto).collect(Collectors.toList());
+    }
+
+
 
     @Scheduled(fixedRate = 5000)
     public TemperatureDto fetchTemperatureFromArduino() {
@@ -52,21 +63,17 @@ public class TemperatureService {
         String temperatureLine = responseBody.split("\n")[3];
         String[] tempValues = temperatureLine.split(" ")[1].split(":");
 
-            double c = Double.parseDouble(tempValues[0]);
-            double f = Double.parseDouble(tempValues[1]);
+        double c = Double.parseDouble(tempValues[0]);
+        double f = Double.parseDouble(tempValues[1]);
 
-            LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
 
-            TemperatureDto parsingData = new TemperatureDto(c, f, now);
-            return parsingData;
+        TemperatureDto parsingData = new TemperatureDto(c, f, now);
+        return parsingData;
     }
 
 
-    private TemperatureEntity convertToEntity(TemperatureDto dto) {
-        TemperatureEntity entity = new TemperatureEntity();
-        entity.setCelsius(dto.getCelsius());
-        entity.setFahrenheit(dto.getFahrenheit());
-        return entity;
-
+    private TemperatureDto convertToDto(TemperatureEntity entity) {
+        return new TemperatureDto(entity.getCelsius(), entity.getFahrenheit(), entity.getTimeStamp());
     }
 }
