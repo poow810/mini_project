@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Service
 public class TemperatureService {
 
-    private static final String ARDUINO_URL = "http://165.246.116.168:80/"; // 통신을 위한 URL
+    private static final String ARDUINO_URL = "http://165.246.116.81:80/"; // 통신을 위한 URL
     private final RestTemplate restTemplate;
     private final TemperatureRepository temperatureRepository;
 
