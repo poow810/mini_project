@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Average Temperatures</h1>
+<table id="averageTemperatureTable" border="1">
+  <tr>
+    <th>날짜</th>
+    <th>평균 섭씨 온도</th>
+    <th>평균 화씨 온도</th>
+  </tr>
+  <!-- Table data will be inserted here -->
+</table>
+
+<script>
+  // Fetch data from the server
+  fetch('/average/avgdata')
+          .then(response => response.json())  // Convert response to JSON
+          .then(data => {
+            var table = document.getElementById("averageTemperatureTable");
+
+            // Ensure that data is an array
+            data = Array.isArray(data) ? data : [data];
+
+            data.forEach(function (item) {
+              var row = document.createElement('tr');
+
+              var date = document.createElement('td');
+              date.textContent = item.date;
+              row.appendChild(date);
+
+              var celsius = document.createElement('td');
+              celsius.textContent = item.avgCelsius;
+              row.appendChild(celsius);
+
+              var fahrenheit = document.createElement('td');
+              fahrenheit.textContent = item.avgFahrenheit;
+              row.appendChild(fahrenheit);
+
+              table.appendChild(row);
+            });
+          })
+          .catch(error => console.error('Error:', error));
+</script>
+</body>
+</html>

@@ -1,10 +1,10 @@
 package com.hawoon.temperatureSensor.controller;
 
-import com.hawoon.temperatureSensor.TemperatureDto;
+import com.hawoon.temperatureSensor.Dto.AvgTemperatureDto;
+import com.hawoon.temperatureSensor.Dto.TemperatureDto;
 import com.hawoon.temperatureSensor.TemperatureService;
 import lombok.experimental.PackagePrivate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,18 +22,6 @@ public class TemperatureController {
         this.temperatureService = temperatureService;
     }
 
-
-    @GetMapping("/test")
-    public TemperatureDto displayTemperature(Model model) {
-        return temperatureService.fetchTemperatureFromArduino();
-    }
-
-    //
-//    @GetMapping("/measure")
-//    public List<TemperatureDto> getMeasuredTemperature() {
-//        return temperatureService.getTemperature();
-//    }
-
     @GetMapping("/measure")
     public String showTemperatureData(Model model) {
         List<TemperatureDto> data = temperatureService.getTemperature();
@@ -45,6 +33,19 @@ public class TemperatureController {
     @ResponseBody
     public List<TemperatureDto> getMeasuredTemperature() {
         return temperatureService.getTemperature();
+    }
+
+    @GetMapping("/average")
+    public String average(Model model) {
+        List<AvgTemperatureDto> avgData = temperatureService.getAverageTemperaturePerDay();
+        model.addAttribute("averageTemperatureTable", avgData);
+        return "test/average";
+    }
+
+    @GetMapping("/average/avgData")
+    @ResponseBody
+    public List<AvgTemperatureDto> getAvgTemperature() {
+        return temperatureService.getAverageTemperaturePerDay();
     }
 }
 

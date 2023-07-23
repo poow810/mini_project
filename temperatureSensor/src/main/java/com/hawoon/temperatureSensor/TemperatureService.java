@@ -1,11 +1,14 @@
 package com.hawoon.temperatureSensor;
 
+import com.hawoon.temperatureSensor.Dto.AvgTemperatureDto;
+import com.hawoon.temperatureSensor.Dto.TemperatureDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,7 +40,7 @@ public class TemperatureService {
     }
 
 
-
+    // Arduino의 데이터를 받아오기 위한 메서드
     @Scheduled(fixedRate = 5000)
     public TemperatureDto fetchTemperatureFromArduino() {
         TemperatureDto parsingData = null;
@@ -59,6 +62,7 @@ public class TemperatureService {
         return parsingData;
     }
 
+    // json 형식으로 parsing
     private TemperatureDto parseTemperatureResponse(String responseBody) {
         String temperatureLine = responseBody.split("\n")[3];
         String[] tempValues = temperatureLine.split(" ")[1].split(":");
@@ -72,8 +76,11 @@ public class TemperatureService {
         return parsingData;
     }
 
-
     private TemperatureDto convertToDto(TemperatureEntity entity) {
         return new TemperatureDto(entity.getCelsius(), entity.getFahrenheit(), entity.getTimeStamp());
+    }
+
+    public List<AvgTemperatureDto> getAverageTemperaturePerDay() {
+        return temperatureRepository.findAverageTemperaturePerDay();
     }
 }
