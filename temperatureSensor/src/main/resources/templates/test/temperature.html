@@ -1,11 +1,54 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>Temperature Data</title>
-  <link rel="stylesheet" th:href="@{/css/board.css}">
-</head>
+<html>
 <body>
-<h1>Welcome to Inha SmartFactory WebServer!</h1>
+<table id="temperatureTable" border="1">
+  <tr>
+    <th>섭씨 온도</th>
+    <th>화씨 온도</th>
+    <th>Timestamp</th>
+  </tr>
+  <!-- Table data will be inserted here -->
+</table>
+
+<script>
+  // Fetch data from the server
+  // Fetch data from the server
+  fetch('/measure/data')
+          .then(response => response.json())  // Convert response to JSON
+          .then(data => {
+            var table = document.getElementById("temperatureTable");
+
+            data.forEach(function (item) {
+              var row = document.createElement('tr');
+
+              var celsius = document.createElement('td');
+              celsius.textContent = item.celsius;
+              row.appendChild(celsius);
+
+              var fahrenheit = document.createElement('td');
+              fahrenheit.textContent = item.fahrenheit;
+              row.appendChild(fahrenheit);
+
+              var timeStamp = document.createElement('td');
+
+              // Create a new Date object from the timestamp
+              var date = new Date(item.timeStamp);
+
+              // Format the date as: YYYY-MM-DD HH:MM:SS
+              timeStamp.textContent = date.getFullYear() + '-' +
+                      ('0' + (date.getMonth() + 1)).slice(-2) + '-' +
+                      ('0' + date.getDate()).slice(-2) + ' ' +
+                      ('0' + date.getHours()).slice(-2) + ':' +
+                      ('0' + date.getMinutes()).slice(-2) + ':' +
+                      ('0' + date.getSeconds()).slice(-2);
+
+              row.appendChild(timeStamp);
+
+              table.appendChild(row);
+            });
+          })
+          .catch(error => console.error('Error:', error));
+
+</script>
 </body>
 </html>
